@@ -12,7 +12,7 @@ A Retrieval-Augmented Generation (RAG) chatbot demonstration built with Python.
 1. Clone the repository:
 ```bash
 git clone 
-cd rag-chatbot-demo
+cd weave-chatbot-refence
 ```
 
 2. Install dependencies:
@@ -29,7 +29,7 @@ uv run app.py
 ## Project Structure
 
 ```
-rag-chatbot-demo/
+weave-chatbot-refence/
 ├── README.md
 ├── app.py
 ├── pyproject.toml
