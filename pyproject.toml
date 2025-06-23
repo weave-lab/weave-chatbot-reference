@@ -1,5 +1,5 @@
 [project]
-name = "rag-chatbot-demo"
+name = "weave-chatbot"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
