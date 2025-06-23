@@ -7,20 +7,15 @@ A Retrieval-Augmented Generation (RAG) chatbot demonstration built with Python.
 - Python 3.8+
 - [uv](https://github.com/astral-sh/uv) package manager
 
-## Setup
+## Getting Started
 
-1. Clone the repository:
+1. Clone It
 ```bash
-git clone 
+git clone https://github.com/weave-lab/weave-chatbot-reference.git
 cd weave-chatbot-refence
 ```
 
-2. Install dependencies:
-```bash
-uv sync
-```
-
-## Usage
+2. Run It
 
 ```bash
 uv run app.py
@@ -44,7 +39,3 @@ weave-chatbot-refence/
 - Retrieval-Augmented Generation chatbot
 - Vector database integration
 - Natural language processing
-
-## Dependencies
-
-Dependencies are managed through uv. See `requirements.txt` for the full list.
