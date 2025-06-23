@@ -50,7 +50,7 @@ def generate_chat_response(client: genai.Client, system_prompt: str, user_messag
     messages = chat_history.copy() # Enrich with past context here...
     if context_text:
         # This structure is mandated by Google's interface, it is not a general standard.
-        messages.append({"role": "enrichment", "parts": [{"text": f"Relevant context:\n{context_text}"}]})
+        messages.append({"role": "model", "parts": [{"text": f"Relevant context:\n{context_text}"}]})
 
     chat_session = client.chats.create(
         model=model,
