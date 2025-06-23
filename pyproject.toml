@@ -1,0 +1,20 @@
+[project]
+name = "rag-chatbot-demo"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "google-auth>=2.40.1",
+    "google-cloud-aiplatform>=1.93.0",
+    "google-genai>=1.15.0",
+    "litestar>=2.16.0",
+    "redis>=6.1.0",
+    "scikit-learn>=1.7.0",
+]
+
+[dependency-groups]
+dev = [
+    "ipdb>=0.13.13",
+    "ipython>=9.2.0",
+]
