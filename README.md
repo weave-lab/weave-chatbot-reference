@@ -12,7 +12,7 @@ A Retrieval-Augmented Generation (RAG) chatbot demonstration built with Python.
 1. Clone It
 ```bash
 git clone https://github.com/weave-lab/weave-chatbot-reference.git
-cd weave-chatbot-refence
+cd weave-chatbot-reference
 ```
 
 2. Run It
