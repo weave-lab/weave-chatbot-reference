@@ -17,8 +17,20 @@ cd weave-chatbot-reference
 
 2. Run It
 
+### Using Vertex AI (Default)
 ```bash
 uv run app.py
+```
+
+### Using Gemini API
+First, set your API key:
+```bash
+export GEMINI_API_KEY="your-api-key-here"
+```
+
+Then run with the gemini_api client:
+```bash
+uv run app.py --client gemini_api
 ```
 
 ## Project Structure
@@ -27,6 +39,7 @@ uv run app.py
 weave-chatbot-refence/
 ├── README.md
 ├── app.py
+├── config.py
 ├── pyproject.toml
 ├── rag_utils.py
 ├── prompts/

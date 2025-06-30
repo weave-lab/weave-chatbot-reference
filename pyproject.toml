@@ -9,6 +9,7 @@ dependencies = [
     "google-cloud-aiplatform>=1.93.0",
     "google-genai>=1.15.0",
     "litestar>=2.16.0",
+    "python-dotenv>=1.1.1",
     "redis>=6.1.0",
     "scikit-learn>=1.7.0",
 ]
@@ -17,4 +18,5 @@ dependencies = [
 dev = [
     "ipdb>=0.13.13",
     "ipython>=9.2.0",
+    "ruff>=0.12.1",
 ]
