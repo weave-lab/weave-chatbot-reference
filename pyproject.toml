@@ -17,4 +17,5 @@ dependencies = [
 dev = [
     "ipdb>=0.13.13",
     "ipython>=9.2.0",
+    "ruff>=0.12.2",
 ]

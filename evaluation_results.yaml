@@ -1,0 +1,12 @@
+evaluation_summary:
+  total_test_cases: 3
+  prompt_version: v3
+  answer_quality:
+    average_score: 1.000
+    max_score: 1.0
+  context_precision:
+    average_score: 1.000
+    max_score: 1.0
+  individual_scores:
+    answer_quality: [1.0, 1.0, 1.0]
+    context_precision: [1.0, 1.0, 1.0]
