@@ -27,11 +27,14 @@ uv run app.py
 weave-chatbot-refence/
 ├── README.md
 ├── app.py
+├── eval_rag.py
+├── goldens.jsonl
 ├── pyproject.toml
 ├── rag_utils.py
 ├── prompts/
 ├──── system_prompt_v1.txt
-└──── system_prompt_v2.txt
+├──── system_prompt_v2.txt
+└──── system_prompt_v3.txt
 ```
 
 ## Features
@@ -39,3 +42,20 @@ weave-chatbot-refence/
 - Retrieval-Augmented Generation chatbot
 - Vector database integration
 - Natural language processing
+- LLM-based evaluation system
+
+## Evaluation
+
+Evaluate your RAG system's performance:
+
+```bash
+uv run eval_rag.py
+```
+
+### Test Cases
+
+`goldens.jsonl` - each line should contain a JSON object representating test case
+
+The evaluation measures:
+- **Answer Quality**: How well generated answers match expected answers
+- **Context Precision**: How well relevant information is ranked first in retrieval
