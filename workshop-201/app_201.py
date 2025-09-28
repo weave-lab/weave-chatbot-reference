@@ -1,64 +1,26 @@
-import os
 import argparse  # Import argparse for command-line argument parsing
+from pathlib import Path
 from google import genai
-from google.genai import types
-from rag_utils import InMemoryVectorStore, get_embeddings
+from google.genai.types import GenerateContentConfig
+from vector_store import MilvusVectorStore
 
 # Define global constants for project and location
 PROJECT_ID = "weave-ai-sandbox"
 LOCATION = "us-central1"
-SIMILARITY_THRESHOLD = 0.75  # Threshold for similarity in RAG retrieval
-VECTOR_TOP_K = 3  # Max number of top similar documents to retrieve
+VECTOR_TOP_K = 5  # Max number of top similar documents to retrieve
 
 
-# Function to read versioned system prompt from a file, defaulting to "v1"
-# This function assumes the prompt files are stored in a "prompts" directory.
+# Function to read versioned system prompt from a file, defaulting to "v1".
+# This function assumes the prompt files are stored in a "prompts" directory relative to this script.
 def read_prompt_from_file(version: str = "v1") -> str:
-    file_path = os.path.join("prompts", f"system_prompt_{version}.txt")
+    """Read the system prompt from a file based on the specified version."""
+    current_file = Path(__file__).parent
+    file_path = current_file / "prompts" / f"system_prompt_{version}.txt"
     try:
         with open(file_path, "r") as f:
             return f.read().strip()
     except FileNotFoundError:
         raise ValueError(f"Prompt version '{version}' not found at {file_path}")
-
-
-# Function to chunk text into smaller pieces
-# This is a simplified version; in practice, you might want to use more sophisticated chunking
-# strategies to ensure meaningful context is preserved.
-# For example, you might want to split by sentences or paragraphs rather than fixed character counts.
-# This is especially important for RAG applications where context matters.
-def chunk_text(text: str, chunk_size=512, overlap=50) -> list:
-    # Overly simplified chunking
-    chunks = []
-    start = 0
-    while start < len(text):
-        end = start + chunk_size
-        chunk = text[start:end]
-        chunks.append(chunk)
-        start += chunk_size - overlap
-    return chunks
-
-
-def retrieve_context(
-    client: genai.Client,
-    vector_store: InMemoryVectorStore,
-    user_message: str,
-    top_k: int = VECTOR_TOP_K,
-    similarity_threshold: float = SIMILARITY_THRESHOLD,
-    verbose: bool = False,
-) -> list:
-    # Get embedding for user query
-    query_embedding = get_embeddings(user_message, client)
-
-    # Retrieve relevant context from the vector store
-    retrieved_context = vector_store.retrieve(
-        query_embedding,
-        top_k=top_k,
-        similarity_threshold=similarity_threshold,
-        verbose=verbose,
-    )
-
-    return retrieved_context
 
 
 def generate_chat_response(
@@ -70,12 +32,13 @@ def generate_chat_response(
     model: str = "gemini-2.5-flash",
     verbose: bool = False,
 ) -> str:
-    config = types.GenerateContentConfig(
-        temperature=0.2,  # Lower temperature for more deterministic responses, this roughly corresponds to "creativity" in the model
+    """Generate a chat response using the GenAI client with optional RAG context."""
+    config = GenerateContentConfig(
+        temperature=0.2,  # Lower temperature for more deterministic responses; this roughly corresponds to "creativity" in the model
         max_output_tokens=512,  # Limit the response length to 512 tokens
-        # top_p=0.95,  # Top-p sampling for diversity, this is a common setting for chat models
+        # top_p=0.95,  # Top-p sampling for diversity; this is a common setting for chat models
         # top_k=40,  # Top-k sampling to limit the number of tokens considered
-        system_instruction=system_prompt,  # System prompt to set the context for the chat model, Google only allowes this in client initialization
+        system_instruction=system_prompt,  # System prompt to set the context for the chat model; Google only allows this in client initialization
     )
 
     context_text = "\n\n".join(context_snippets)
@@ -83,7 +46,7 @@ def generate_chat_response(
     # Supports the roles "user" and "model"
     messages = chat_history.copy()  # Enrich with past context here...
     if context_text:
-        # This structure is mandated by Google's interface, it is not a general standard.
+        # This structure is mandated by Google's interface; it is not a general standard.
         messages.append(
             {"role": "model", "parts": [{"text": f"Relevant context:\n{context_text}"}]}
         )
@@ -100,51 +63,64 @@ def generate_chat_response(
         print("--------------------------\n", flush=True)
 
     response = chat_session.send_message(user_message)
+    if not response or not response.text:
+        raise ValueError("Failed to generate chat response.")
 
     return response.text
 
 
-def init_vector_store(client: genai.Client) -> InMemoryVectorStore:
-    # Sample documents for RAG
-    documents = [
-        "The capital of Utah is Salt Lake City.",
-        "Salt Lake City is known for its proximity to the Great Salt Lake.",
-        "The first governor of Utah was Blue Bayou.",  # This is a fictional example, to show knowledge retrieval can supplant the base model's knowledge
-        "Brigham Young was a leader in the Latter-day Saint movement.",
-        "The current governor of Utah is Spencer Cox.",
-        "Utah is a state in the Western United States.",
-    ]
-
-    # Initialize vector store
-    vector_store = InMemoryVectorStore()
-
-    # Chunk documents and add to vector store
-    for doc in documents:
-        chunks = chunk_text(doc)  # Using the existing chunk_text function
-        for chunk in chunks:
-            embeddings = get_embeddings(chunk, client)
-            for embedding in embeddings:
-                vector_store.add_document(chunk, embedding)
-
+def init_vector_store(
+    client: genai.Client, collection_name: str = "weave_docs", reingest: bool = False
+) -> MilvusVectorStore:
+    """Initialize the Milvus vector store and ingest documents if needed."""
+    current_file = Path(__file__).parent
+    doc_paths = [str(current_file / "data" / "waml.md")]
+    vector_db_path = str(current_file / "vector_db" / "milvus.db")
+    # Initialize Milvus vector store
+    vector_store = MilvusVectorStore(vector_db_path=vector_db_path, genai_client=client)
+    # Create collection if it doesn't exist or if reingestion is forced
+    if reingest or not vector_store.milvus_client.has_collection(collection_name):
+        vector_store.create_collection(doc_paths, collection_name=collection_name)
     return vector_store
 
 
 def main():
+    """Main function to run the CLI chat client with RAG."""
     # Set up argument parsing
-    parser = argparse.ArgumentParser(description="CLI Chat Client with RAG.")
+    parser = argparse.ArgumentParser(
+        description="CLI Chat Client with RAG using Milvus vector store."
+    )
     parser.add_argument(
         "--verbose",
         "-v",
         action="store_true",
         help="Enable verbose output for RAG retrieval details.",
     )
+    parser.add_argument(
+        "--collection",
+        "-c",
+        type=str,
+        default="weave_docs",
+        help="Name of the Milvus collection to use (default: weave_docs).",
+    )
+    parser.add_argument(
+        "--reingest",
+        "-r",
+        action="store_true",
+        help="Force re-ingestion of documents even if collection exists.",
+    )
     args = parser.parse_args()
 
     # Initialize GenAI Client once
     genai_client = genai.Client(vertexai=True, project=PROJECT_ID, location=LOCATION)
 
-    # Initialize vector store
-    vector_store = init_vector_store(genai_client)
+    # Initialize vector store with new parameters
+    print(f"Initializing Milvus vector store with collection '{args.collection}'...")
+    if args.reingest:
+        print("Force re-ingestion enabled - will recreate collection.")
+    vector_store = init_vector_store(
+        genai_client, collection_name=args.collection, reingest=args.reingest
+    )
     system_prompt = read_prompt_from_file()
     chat_history = []  # To store past messages for conversational context
 
@@ -170,10 +146,10 @@ def main():
             break
 
         # Retrieve relevant context, passing the verbose flag
-        retrieved_context = retrieve_context(
-            genai_client,
-            vector_store,
-            user_message,
+        retrieved_context = vector_store.retrieve(
+            query=user_message,
+            collection_name=args.collection,
+            top_k=VECTOR_TOP_K,
             verbose=args.verbose,
         )
 
@@ -187,7 +163,7 @@ def main():
             retrieved_context,
             verbose=args.verbose,
         )
-        # Append user message and response to chat history
+        # Append user message and response to chat history.
         # This is important for maintaining conversational context in the chat session.
         # The chat history structure is designed to be compatible with Google's chat interface.
         chat_history.append({"role": "user", "parts": [{"text": user_message}]})
