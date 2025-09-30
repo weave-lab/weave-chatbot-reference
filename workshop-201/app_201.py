@@ -69,15 +69,19 @@ def generate_chat_response(
     return response.text
 
 
+from pathlib import Path
+
 def init_vector_store(
     client: genai.Client, collection_name: str = "weave_docs", reingest: bool = False
 ) -> MilvusVectorStore:
     """Initialize the Milvus vector store and ingest documents if needed."""
     current_file = Path(__file__).parent
     doc_paths = [str(current_file / "data" / "waml.md")]
-    vector_db_path = str(current_file / "vector_db" / "milvus.db")
+    vector_db_path = current_file / "vector_db" / "milvus.db"
+    # Ensure the parent directory exists
+    vector_db_path.parent.mkdir(parents=True, exist_ok=True)
     # Initialize Milvus vector store
-    vector_store = MilvusVectorStore(vector_db_path=vector_db_path, genai_client=client)
+    vector_store = MilvusVectorStore(vector_db_path=str(vector_db_path), genai_client=client)
     # Create collection if it doesn't exist or if reingestion is forced
     if reingest or not vector_store.milvus_client.has_collection(collection_name):
         vector_store.create_collection(doc_paths, collection_name=collection_name)
