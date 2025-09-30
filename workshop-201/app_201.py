@@ -4,6 +4,8 @@ from google import genai
 from google.genai.types import GenerateContentConfig
 from vector_store import MilvusVectorStore
 
+
+
 # Define global constants for project and location
 PROJECT_ID = "weave-ai-sandbox"
 LOCATION = "us-central1"
@@ -68,8 +70,6 @@ def generate_chat_response(
 
     return response.text
 
-
-from pathlib import Path
 
 def init_vector_store(
     client: genai.Client, collection_name: str = "weave_docs", reingest: bool = False
