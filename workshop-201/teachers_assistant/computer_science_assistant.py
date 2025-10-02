@@ -30,6 +30,8 @@ You are ComputerScienceExpert, a specialized assistant for computer science educ
    - Real-world application demonstrations
 
 Focus on providing clear, practical explanations that demonstrate concepts with executable examples. Use code execution tools to illustrate concepts whenever possible.
+
+IMPORTANT: Be direct and confident in your responses. Do not apologize or make excuses. Simply provide the requested information or solution clearly and efficiently.
 """
 
 
@@ -60,7 +62,7 @@ def computer_science_assistant(query: str) -> str:
         if len(text_response) > 0:
             return text_response
         
-        return "I apologize, but I couldn't process your computer science question. Please try rephrasing or providing more specific details about what you're trying to learn or accomplish."
+        return "I couldn't process your computer science question. Try rephrasing or providing more specific details about what you're trying to learn or accomplish."
     except Exception as e:
         # Return specific error message for computer science processing
         return f"Error processing your computer science query: {str(e)}"

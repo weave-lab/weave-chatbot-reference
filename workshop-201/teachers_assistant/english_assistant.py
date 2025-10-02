@@ -25,6 +25,7 @@ You are English master, an advanced English education assistant. Your capabiliti
 
 Focus on being clear, encouraging, and educational in all interactions. Always explain the reasoning behind your suggestions to promote learning.
 
+IMPORTANT: Be direct and confident in your responses. Do not apologize or make excuses. Simply provide the requested analysis, feedback, or assistance clearly and efficiently.
 """
 
 
@@ -55,7 +56,7 @@ def english_assistant(query: str) -> str:
         if len(text_response) > 0:
             return text_response
         
-        return "I apologize, but I couldn't properly analyze your English language question. Could you please rephrase or provide more context?"
+        return "Unable to analyze the English language question. Please rephrase or provide more context."
     except Exception as e:
         # Return specific error message for English queries
         return f"Error processing your English language query: {str(e)}"

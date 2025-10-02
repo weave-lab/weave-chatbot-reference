@@ -110,29 +110,75 @@ class TeacherAssistant:
         Returns:
             String response from the agent, or dict with response and metrics
         """
-        # Create a fresh agent for each query to clear context
-        agent = Agent(
-            model=self.model,
-            system_prompt=self.system_prompt,
-            tools=[
-                math_assistant,
-                english_assistant,
-                language_assistant,
-                computer_science_assistant,
-                general_assistant,
-                today,
-            ],
-        )
+        max_retries = 3
 
-        response = agent(query)
-        response_str = str(response)
+        for attempt in range(max_retries):
+            # Create a fresh agent for each query to clear context
+            agent = Agent(
+                model=self.model,
+                system_prompt=self.system_prompt,
+                tools=[
+                    math_assistant,
+                    english_assistant,
+                    language_assistant,
+                    computer_science_assistant,
+                    general_assistant,
+                    today,
+                ],
+            )
 
-        # Post-process output to ensure newlines before routing explanations
-        response_str = re.sub(r"([^\n])(?=Routing to )", r"\1\n", response_str)
+            response = agent(query)
+            response_str = str(response)
 
-        if return_metrics:
-            return {"response": response_str, "metrics": response.metrics.get_summary()}
-        return response_str
+            # Check if we got tool call JSON instead of actual execution
+            if self._is_tool_call_json(response_str):
+                if attempt < max_retries - 1:
+                    print(f"Tool call not executed, retrying... (attempt {attempt + 1})")
+                    continue
+                else:
+                    # Final attempt failed, return a helpful message
+                    return "I'm having trouble executing the appropriate tool. Please try rephrasing your question or try again."
+
+            # Post-process output to ensure newlines before routing explanations
+            response_str = re.sub(r"([^\n])(?=Routing to )", r"\1\n", response_str)
+
+            if return_metrics:
+                return {"response": response_str, "metrics": response.metrics.get_summary()}
+            return response_str
+
+        # This shouldn't be reached, but just in case
+        return "Unable to process your request after multiple attempts."
+
+    def _is_tool_call_json(self, response: str) -> bool:
+        """
+        Check if the response contains tool call JSON instead of actual execution results.
+
+        Args:
+            response: The response string to check
+
+        Returns:
+            True if the response appears to be tool call JSON, False otherwise
+        """
+        # Check for patterns that indicate tool call JSON rather than execution
+        json_patterns = [
+            '{"name":"math_assistant"',
+            '{"name":"computer_science_assistant"',
+            '{"name":"english_assistant"',
+            '{"name":"language_assistant"',
+            '{"name":"general_assistant"',
+            '"parameters":',
+        ]
+
+        # If response contains these patterns and lacks actual content, it's likely JSON
+        has_json_pattern = any(pattern in response for pattern in json_patterns)
+
+        # Check if response is very short and mostly JSON-like
+        is_short_json = len(response.strip()) < 200 and has_json_pattern
+
+        # Check if response starts with JSON pattern (common case)
+        starts_with_json = response.strip().startswith('{"name":')
+
+        return has_json_pattern and (is_short_json or starts_with_json)
 
     def ask_with_console_output(self, query: str, show_metrics: bool = False) -> str:
         """
@@ -200,6 +246,16 @@ Examples:
         return
 
     # Load history if file exists
+    if os.path.exists(HISTORY_FILE):
+        readline.read_history_file(HISTORY_FILE)
+
+    # Configure readline for better history handling
+    readline.set_history_length(1000)
+    readline.parse_and_bind("tab: complete")
+    readline.parse_and_bind("set editing-mode emacs")
+
+    # Clear any potential readline artifacts
+    readline.clear_history()
     if os.path.exists(HISTORY_FILE):
         readline.read_history_file(HISTORY_FILE)
 

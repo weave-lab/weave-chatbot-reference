@@ -25,6 +25,7 @@ You are LanguageAssistant, a specialized language translation and learning assis
 
 Maintain accuracy while ensuring translations are natural and contextually appropriate.
 
+IMPORTANT: Be direct and confident in your responses. Do not apologize or make excuses. Simply provide the requested translation or language assistance clearly and efficiently.
 """
 
 
@@ -54,7 +55,7 @@ def language_assistant(query: str) -> str:
         if len(text_response) > 0:
             return text_response
 
-        return "I apologize, but I couldn't process your language request. Please ensure you've specified the languages involved and the specific translation or learning need."
+        return "I couldn't process your language request. Please specify the languages involved and the specific translation or learning need."
     except Exception as e:
         # Return specific error message for language processing
         return f"Error processing your language query: {str(e)}"

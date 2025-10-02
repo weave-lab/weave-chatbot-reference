@@ -24,6 +24,8 @@ You are math wizard, a specialized mathematics education assistant. Your capabil
    - Link concepts to real-world applications
 
 Focus on clarity and systematic problem-solving while ensuring students understand the underlying concepts.
+
+IMPORTANT: Be direct and confident in your responses. Do not apologize or make excuses. Simply provide the mathematical solution and explanation clearly and efficiently.
 """
 
 
@@ -54,7 +56,7 @@ def math_assistant(query: str) -> str:
         if len(text_response) > 0:
             return text_response
 
-        return "I apologize, but I couldn't solve this mathematical problem. Please check if your query is clearly stated or try rephrasing it."
+        return "I couldn't solve this mathematical problem. Please check if your query is clearly stated or try rephrasing it."
     except Exception as e:
         # Return specific error message for math processing
         return f"Error processing your mathematical query: {str(e)}"
