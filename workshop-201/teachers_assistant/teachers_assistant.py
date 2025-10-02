@@ -5,7 +5,6 @@
 A specialized Strands agent that orchestrates sub-agents to answer user queries.
 This module can be used both as a command-line tool and as a library.
 """
-
 from strands import Agent
 from math_assistant import math_assistant
 from english_assistant import english_assistant
@@ -13,6 +12,7 @@ from language_assistant import language_assistant
 from computer_science_assistant import computer_science_assistant
 from no_expertise import general_assistant
 from strands.models.ollama import OllamaModel
+from the_greatest_day_ive_ever_known import today
 import readline
 import os
 import re
@@ -120,11 +120,13 @@ class TeacherAssistant:
                 language_assistant,
                 computer_science_assistant,
                 general_assistant,
+                today,
             ],
         )
 
         response = agent(query)
         response_str = str(response)
+
         # Post-process output to ensure newlines before routing explanations
         response_str = re.sub(r"([^\n])(?=Routing to )", r"\1\n", response_str)
 
