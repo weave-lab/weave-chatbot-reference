@@ -17,12 +17,16 @@ import readline
 import os
 import re
 import argparse
+import requests
+import sys
 from rich.console import Console
 from rich.markdown import Markdown
 import json
 from typing import Optional, Dict, Any
 
 TEACHER_SYSTEM_PROMPT = """
+CRITICAL INSTRUCTION: Never apologize or make excuses. Be direct and confident. Execute tools immediately and return their results.
+
 For any query, autonomously plan and execute all necessary tool calls in sequence to fully resolve the user's request. Chain outputs between tools as needed, and return the final result. Do not ask the user to perform intermediate steps or confirm actions; handle everything automatically.
 
 Only call the Language Agent if the user explicitly requests a translation or a response in another language. Do not translate or call the Language Agent unless asked.
@@ -42,6 +46,7 @@ Additional Instructions:
 - When providing routing explanations, be specific and accurate about the type of problem (e.g., "addition" instead of "quadratic equation" for sums).
 - Simply call the appropriate tool and let its response be the final answer. Do not add additional commentary or repeat the tool's output.
 - The tool response itself is the complete answer to the user.
+- DO NOT apologize, make excuses, or explain why something didn't work. Just execute the tool and return the result.
 
 1. Analyze incoming student queries and determine the most appropriate specialized agent to handle them:
    - Math Agent: For mathematical calculations, problems, and concepts
@@ -211,6 +216,45 @@ console = Console()
 HISTORY_FILE = os.path.expanduser("~/.teachassist_history")
 
 
+def check_ollama_health(host: str = "http://localhost:11434", timeout: int = 5) -> bool:
+    """
+    Check if Ollama is running and accessible.
+
+    Args:
+        host: Ollama server address
+        timeout: Request timeout in seconds
+
+    Returns:
+        True if Ollama is accessible, False otherwise
+    """
+    try:
+        response = requests.get(f"{host}/api/tags", timeout=timeout)
+        return response.status_code == 200 
+    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout, requests.exceptions.RequestException):
+        return False
+
+
+def fail_fast_ollama_check(host: str = "http://localhost:11434"):
+    """
+    Check if Ollama is running and exit immediately if not.
+
+    Args:
+        host: Ollama server address
+    """
+    print("Checking Ollama connection...")
+
+    if not check_ollama_health(host):
+        console.print(f"[red]❌ Error: Ollama is not running or not accessible at {host}[/red]")
+        console.print("\n[yellow]Please ensure Ollama is installed and running:[/yellow]")
+        console.print("1. Install Ollama from https://ollama.com/download")
+        console.print("2. Start Ollama by running: ollama serve")
+        console.print("3. Pull the required model: ollama pull llama3.2:3b")
+        console.print(f"\nThen try running the teacher assistant again.")
+        sys.exit(1)
+
+    print("✅ Ollama connection successful")
+
+
 def run_cli():
     """Run the command-line interface for the teacher assistant."""
     # Parse command line arguments
@@ -238,6 +282,9 @@ Examples:
 
     args = parser.parse_args()
     show_metrics = args.metrics
+
+    # Fail fast if Ollama is not running
+    fail_fast_ollama_check()
 
     # Handle single query mode
     if args.query:

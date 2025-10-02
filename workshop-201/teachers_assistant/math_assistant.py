@@ -1,6 +1,5 @@
 from strands import Agent, tool
 from strands_tools import calculator
-import json
 
 MATH_ASSISTANT_SYSTEM_PROMPT = """
 You are math wizard, a specialized mathematics education assistant. Your capabilities include:
@@ -56,7 +55,7 @@ def math_assistant(query: str) -> str:
         if len(text_response) > 0:
             return text_response
 
-        return "I couldn't solve this mathematical problem. Please check if your query is clearly stated or try rephrasing it."
+        return "Unable to solve this mathematical problem. Please check if your query is clearly stated or try rephrasing it."
     except Exception as e:
         # Return specific error message for math processing
         return f"Error processing your mathematical query: {str(e)}"

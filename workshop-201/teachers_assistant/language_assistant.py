@@ -55,7 +55,7 @@ def language_assistant(query: str) -> str:
         if len(text_response) > 0:
             return text_response
 
-        return "I couldn't process your language request. Please specify the languages involved and the specific translation or learning need."
+        return "Unable to process your language request. Please specify the languages involved and the specific translation or learning need."
     except Exception as e:
         # Return specific error message for language processing
         return f"Error processing your language query: {str(e)}"

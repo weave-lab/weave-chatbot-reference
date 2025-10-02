@@ -62,7 +62,7 @@ def computer_science_assistant(query: str) -> str:
         if len(text_response) > 0:
             return text_response
         
-        return "I couldn't process your computer science question. Try rephrasing or providing more specific details about what you're trying to learn or accomplish."
+        return "Unable to process your computer science question. Try rephrasing or providing more specific details."
     except Exception as e:
         # Return specific error message for computer science processing
         return f"Error processing your computer science query: {str(e)}"
