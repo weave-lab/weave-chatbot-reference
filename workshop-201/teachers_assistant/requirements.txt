@@ -1,0 +1,10 @@
+langchain
+langchain-community
+langchain-google-vertexai
+matplotlib
+ollama
+ragas
+requests
+seaborn
+strands-agents
+strands-agents-tools

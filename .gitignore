@@ -1,10 +1,11 @@
-# Python-generated files
+workshop-201/teachers_assistant/.venv/
+workshop-201/.DS_Store
 __pycache__/
+.DS_Store
+.idea/
+.venv
+*.egg-info
 *.py[oc]
 build/
 dist/
 wheels/
-*.egg-info
-
-# Virtual environments
-.venv
