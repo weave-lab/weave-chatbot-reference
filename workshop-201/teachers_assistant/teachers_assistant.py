@@ -22,10 +22,12 @@ import sys
 from rich.console import Console
 from rich.markdown import Markdown
 import json
-from typing import Optional, Dict, Any
+from typing import Optional
 
 TEACHER_SYSTEM_PROMPT = """
 CRITICAL INSTRUCTION: Never apologize or make excuses. Be direct and confident. Execute tools immediately and return their results.
+
+MANDATORY ROUTING FOR DATE QUERIES: Any question about "date", "today", "what day", "current date" MUST use the Today Tool. Do NOT route date questions to general_assistant.
 
 For any query, autonomously plan and execute all necessary tool calls in sequence to fully resolve the user's request. Chain outputs between tools as needed, and return the final result. Do not ask the user to perform intermediate steps or confirm actions; handle everything automatically.
 
@@ -38,7 +40,8 @@ Each specialized agent only performs its specific function:
 - English Agent: Only explains or summarizes results in plain English.
 - Language Agent: Only translates text between languages.
 - Computer Science Agent: Only answers programming and computer science questions.
-- General Assistant: Only handles general knowledge queries.
+- General Assistant: Only handles general knowledge queries (NOT date queries).
+- Today Tool: ALWAYS use for ANY date-related questions including "What is the date today?", "What date is it?", "Today's date", etc.
 
 For multi-step queries, coordinate multiple agents in sequence, passing outputs as needed. Do not use a single agent for multiple steps.
 
@@ -53,7 +56,8 @@ Additional Instructions:
    - English Agent: For writing, grammar, literature, and composition
    - Language Agent: For translation and language-related queries
    - Computer Science Agent: For programming, algorithms, data structures, and code execution
-   - General Assistant: For all other topics outside these specialized domains
+   - Today Tool: For ANY date queries like "What is the date today?", "What date is it?", "Today's date" - NEVER use general_assistant for dates
+   - General Assistant: For all other topics outside these specialized domains (excluding date queries)
 
 2. Key Responsibilities:
    - Accurately classify student queries by subject area
@@ -66,17 +70,12 @@ Additional Instructions:
    - If query involves writing/literature/grammar → English Agent
    - If query involves translation → Language Agent
    - If query involves programming/coding/algorithms/computer science → Computer Science Agent
+   - If query asks about today's date, current date, or "what date is it" → Today Tool (MANDATORY)
    - If query is outside these specialized areas → General Assistant
    - For complex queries, coordinate multiple agents as needed
 
 When you respond, first state which agent you are using and why, then call the appropriate tool. The tool's response is the final answer - do not repeat or summarize it.
 """
-
-ollama_model = OllamaModel(
-    host="http://localhost:11434",  # Ollama server address
-    model_id="llama3.2:3b",  # Specify the model
-)
-
 
 class TeacherAssistant:
     """
@@ -148,7 +147,7 @@ class TeacherAssistant:
             response_str = re.sub(r"([^\n])(?=Routing to )", r"\1\n", response_str)
 
             if return_metrics:
-                return {"response": response_str, "metrics": response.metrics.get_summary()}
+                return {"response": response_str, "metrics": response.metrics}
             return response_str
 
         # This shouldn't be reached, but just in case
@@ -171,6 +170,7 @@ class TeacherAssistant:
             '{"name":"english_assistant"',
             '{"name":"language_assistant"',
             '{"name":"general_assistant"',
+            '{"name":"today"',
             '"parameters":',
         ]
 
@@ -229,7 +229,7 @@ def check_ollama_health(host: str = "http://localhost:11434", timeout: int = 5) 
     """
     try:
         response = requests.get(f"{host}/api/tags", timeout=timeout)
-        return response.status_code == 200 
+        return response.status_code == 200
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout, requests.exceptions.RequestException):
         return False
 
@@ -249,7 +249,7 @@ def fail_fast_ollama_check(host: str = "http://localhost:11434"):
         console.print("1. Install Ollama from https://ollama.com/download")
         console.print("2. Start Ollama by running: ollama serve")
         console.print("3. Pull the required model: ollama pull llama3.2:3b")
-        console.print(f"\nThen try running the teacher assistant again.")
+        console.print("\nThen try running the teacher assistant again.")
         sys.exit(1)
 
     print("✅ Ollama connection successful")
