@@ -16,7 +16,7 @@ uv --version # test that uv is installed
     - Copy Ollama.app to the `Applications` folder on MacOS
     - Double click `Ollama.app` to start the Ollama daemon
     - Make sure you have the model `llama3.2:3b` downloaded
-        - `ollama pull llama3.2:3b
+        - `ollama pull llama3.2:3b`
     - You can check you have the model with `ollama list | grep llama3.2:3b`
     - You will need to have Ollama running to run our agent
 
