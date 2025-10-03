@@ -11,10 +11,11 @@ source $HOME/.cargo/env # run this or start a new terminal
 uv --version # test that uv is installed
 ```
 
-- Ollama - Ollama is a tool for running local LLMs
+- Ollama - Ollama is a tool for running LLMs locally
   - You can download Ollama from [here](https://ollama.com/download)
   - Please install Ollama locally
   - Please make sure that Ollama is running
+  - `ollama run llama3.2:3b`
 
 ## Running the Agent
 ```
