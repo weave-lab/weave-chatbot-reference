@@ -1,8 +1,8 @@
 # Getting started
 
-## Prerequisites
+## Preparation
 
-- Python 3.13+
+- Python
 - [uv](https://docs.astral.sh/uv/getting-started/installation/)
  
 ```
@@ -13,17 +13,29 @@ uv --version # test that uv is installed
 
 - Ollama - Ollama is a tool for running LLMs locally
   - You can download Ollama from [here](https://ollama.com/download)
-  - Please install Ollama locally
-  - Please make sure that Ollama is running
-  - `ollama run llama3.2:3b`
+  - Copy Ollama.app to the `Applications` folder on MacOS
+  - Double click `Ollama.app` to start the Ollama daemon
+  - Make sure you have the model `llama3.2:3b` downloaded
+    - `ollama pull llama3.2:3b
+  - You can check you have the model with `ollama list | grep llama3.2:3b`
+  - You will need to have Ollama running to run our agent
+
+- Visual Studio Code (VSCode) - You can download VSCode from [here](https://code.visualstudio.com/Download)
 
 ## Running the Agent
+
 ```
-uv venv --python=3.13.2
-source .venv/bin/activate
-uv sync
-python teachers_assistant.py
+cd ~/go/src/weavelab.xyz/weave-chatbot-reference/workshop-201 # you might need to change the start of this path
+uv run python teachers_assistant.py
 ```
+
+## Running the eval notebook
+- Open Visual Studio Code
+- Open the `weave-chatbot-reference` folder
+- Open the `workshop-201/llm_evals_teachers_assistant.ipynb` file
+- Click `Select Kernel` in the top right of the notebook
+- Click on `weave-chatbot-reference`
+- Click on `Run All` to run all the cells in the notebook
 
 ## Files
 
