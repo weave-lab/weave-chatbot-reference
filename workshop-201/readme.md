@@ -1,5 +1,6 @@
 # Getting started
 
+
 ## Preparation
 
 - Python
@@ -12,6 +13,7 @@ uv --version # test that uv is installed
 ```
 
 - Ollama - Ollama is a tool for running LLMs locally
+- Even if you have Ollama already installed, make sure you install 3.2
     - You can download Ollama from [here](https://ollama.com/download)
     - Copy Ollama.app to the `Applications` folder on MacOS
     - Double click `Ollama.app` to start the Ollama daemon
