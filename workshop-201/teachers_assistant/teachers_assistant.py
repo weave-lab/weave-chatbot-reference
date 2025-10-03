@@ -147,7 +147,20 @@ class TeacherAssistant:
             response_str = re.sub(r"([^\n])(?=Routing to )", r"\1\n", response_str)
 
             if return_metrics:
-                return {"response": response_str, "metrics": response.metrics}
+                metrics = {}
+                if hasattr(response, "metrics"):
+                    try:
+                        # Try to get summary if available
+                        if hasattr(response.metrics, "get_summary"):
+                            metrics = response.metrics.get_summary()
+                        else:
+                            # Convert metrics object to dict if possible
+                            metrics = vars(response.metrics) if hasattr(response.metrics, '__dict__') else {}
+                    except Exception:
+                        # If metrics can't be serialized, provide basic info
+                        metrics = {"error": "Metrics not serializable", "type": str(type(response.metrics))}
+
+                return {"response": response_str, "metrics": metrics}
             return response_str
 
         # This shouldn't be reached, but just in case
