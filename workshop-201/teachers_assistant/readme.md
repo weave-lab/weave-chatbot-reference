@@ -1,19 +1,20 @@
 # Getting started
 
-## Ollama
-
-Ollama is a tool for running local LLMs. You can download it from [here](https://ollama.com/download). You will need to
-download, install and start the Ollama app to run the agent in this workshop.
-
 ## Prerequisites
 
 - Python 3.13+
 - [uv](https://docs.astral.sh/uv/getting-started/installation/)
+ 
 ```
 curl -LsSf https://astral.sh/uv/install.sh | sh
 source $HOME/.cargo/env # run this or start a new terminal
 uv --version # test that uv is installed
 ```
+
+- Ollama - Ollama is a tool for running local LLMs
+  - You can download Ollama from [here](https://ollama.com/download)
+  - Please install Ollama locally
+  - Please make sure that Ollama is running
 
 ## Running the Agent
 ```
