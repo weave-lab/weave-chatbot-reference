@@ -77,7 +77,8 @@ Here are some sample prompts you can use to test the agent:
 ## Running the eval notebook
 
 - Open Visual Studio Code
-- Open the `weave-chatbot-reference` folder
+- Open the `weave-chatbot-reference` folder. Please note that this is the parent folder of the repo. Opening the
+  workshop-201 folder directly will not work correctly
 - Open the `workshop-201/llm_evals_teachers_assistant.ipynb` file
 - Click `Select Kernel` in the top right of the notebook
 - Click on `weave-chatbot-reference`
