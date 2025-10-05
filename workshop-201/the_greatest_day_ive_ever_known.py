@@ -9,4 +9,4 @@ def today() -> str:
     Returns:
         A string representing today's date.
     """
-    return datetime.now().strftime("%B %d, %Y")
+    return datetime.now().strftime("%B %-d, %Y")
