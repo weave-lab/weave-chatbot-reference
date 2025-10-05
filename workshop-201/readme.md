@@ -1,7 +1,29 @@
-# Getting started
+## Overview
 
+This workshop shows how to build a multi-agent AI system. The system consists of a main teacher's assistant and several
+specialized agents that can handle different types of queries, such as math, language translation, English
+grammar, and computer science. The teacher assistant agent routes incoming prompts to the appropriate specialized agent.
+This document will help you get your environment up and running locally.
+
+We will also get a Jupyter notebook running that evaluates the performance of the teacher's assistant using a set of
+predefined prompts.
+
+For the assignment you will add your own tool and agent to the system and then test it using the notebook. Good luck!
 
 ## Preparation
+
+- Clone this repo
+
+```bash
+git clone https://github.com/weave-lab/weave-chatbot-reference.git`
+````
+
+- Checkout this branch
+
+```bash
+cd weave-chatbot-reference
+git checkout ec-teaching-assistant
+````
 
 - Python
 - [uv](https://docs.astral.sh/uv/getting-started/installation/)
@@ -23,6 +45,11 @@ uv --version # test that uv is installed
     - You will need to have Ollama running to run our agent
 
 - Visual Studio Code (VSCode) - You can download VSCode from [here](https://code.visualstudio.com/Download)
+    - Update VSCode as needed
+    - Install the Python extension as needed
+    - Install the Jupyter extension as needed
+    - Update plugins as needed
+    - If you do much, probably a good idea to restart VSCode
 
 ## Running the Agent
 
@@ -34,7 +61,7 @@ uv run python teachers_assistant.py
 You should now be able to ask the teacher questions. Here are some sample prompts. The agent maintains history, so once
 started you can hit `Up` or `Down` to cycle through previous prompts.
 
-If a prompt doesn't actually get run, try hitting `Up` then `Enter` 
+If a prompt doesn't actually get run, try hitting `Up` then `Enter`
 
 ## Sample Prompts
 
@@ -56,8 +83,6 @@ Here are some sample prompts you can use to test the agent:
 - Click on `weave-chatbot-reference`
 - Click on `Run All` to run all the cells in the notebook
 
-
-
 ## Files
 
 This directory contains the implementation files for several agents and then a main orchestrator agent called
@@ -77,3 +102,7 @@ agents.
 
 This code is built on the agent framework [Strands](https://strandsagents.com/latest/) and based on their multi-agent
 example, which is [here](multi_agent_example.md)
+
+## Assignment
+
+Add a tool that does something useful or at least does something :) Then evaluate it using the notebook.
