@@ -1,6 +1,6 @@
 import argparse
 import json
-from typing import List
+from typing import Dict, List, Any
 from google import genai
 from google.genai import types
 from pydantic import BaseModel, Field
@@ -68,14 +68,14 @@ def get_answer_quality_score(
 
     # Define the structure we want the LLM to return
     response_schema = types.Schema(
-        type="OBJECT",
+        type=types.Type.OBJECT,
         properties={
             "score": types.Schema(
-                type="NUMBER",
+                type=types.Type.NUMBER,
                 description="Quality score: 0.0 = Poor/Incorrect, 0.5 = Partially Correct, 1.0 = Good/Complete",
             ),
             "reasoning": types.Schema(
-                type="STRING", description="Brief explanation for the score"
+                type=types.Type.STRING, description="Brief explanation for the score"
             ),
         },
         required=["score", "reasoning"],
@@ -103,6 +103,8 @@ def get_answer_quality_score(
     response = client.models.generate_content(
         model=model, contents=evaluation_prompt, config=config
     )
+    if not response or not response.text:
+        raise ValueError("Failed to generate evaluation response.")
 
     response_data = json.loads(response.text.strip())
     validated_response = AnswerQualityResponse(**response_data)
@@ -153,10 +155,10 @@ def calculate_contextual_precision(
 
     # Define schema for usefulness response
     usefulness_schema = types.Schema(
-        type="OBJECT",
+        type=types.Type.OBJECT,
         properties={
             "useful": types.Schema(
-                type="BOOLEAN",
+                type=types.Type.BOOLEAN,
                 description="True if context chunk was useful in arriving at the given answer",
             )
         },
@@ -188,6 +190,8 @@ def calculate_contextual_precision(
                 response_schema=usefulness_schema,
             ),
         )
+        if not response or not response.text:
+            raise ValueError("Failed to generate usefulness response.")
 
         response_data = json.loads(response.text.strip())
         validated_response = UsefulnessResponse(**response_data)
@@ -247,7 +251,8 @@ def evaluate_rag_system(goldens_path: str, prompt_version: str = "v1") -> None:
     # Keep track of scores for all test cases
     answer_quality_scores = []
     precision_scores = []
-    chat_history = []  # Maintain conversation history across test cases
+    # Maintain conversation history across test cases
+    chat_history: List[Dict[str, Any]] = []
 
     # Evaluate each test case
     for idx, case in enumerate(evaluation_cases, 1):
