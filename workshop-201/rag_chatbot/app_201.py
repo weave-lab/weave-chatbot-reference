@@ -30,7 +30,7 @@ def generate_chat_response(
     user_message: str,
     chat_history: list = [],
     context_snippets: list = [],
-    model: str = "gemini-2.5-flash",
+    model: str = "gemini-2.5-flash-lite",
     verbose: bool = False,
 ) -> str:
     """Generate a chat response using the GenAI client with optional RAG context."""
