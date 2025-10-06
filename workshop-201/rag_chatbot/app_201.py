@@ -89,6 +89,24 @@ def init_vector_store(
     return vector_store
 
 
+def retrieve_context(
+    vector_store: MilvusVectorStore,
+    query: str,
+    collection_name: str = "weave_docs",
+    top_k: int = VECTOR_TOP_K,
+    verbose: bool = False,
+) -> list:
+    """Retrieve relevant context from the vector store based on the query."""
+    # Retrieve relevant context, passing the verbose flag
+    retrieved_context = vector_store.retrieve(
+        query=query,
+        collection_name=collection_name,
+        top_k=top_k,
+        verbose=verbose,
+    )
+    return retrieved_context
+
+
 def main():
     """Main function to run the CLI chat client with RAG."""
     # Set up argument parsing
@@ -150,8 +168,8 @@ def main():
         elif user_message.lower().strip() in ["quit", "exit"]:
             break
 
-        # Retrieve relevant context, passing the verbose flag
-        retrieved_context = vector_store.retrieve(
+        retrieved_context = retrieve_context(
+            vector_store,
             query=user_message,
             collection_name=args.collection,
             top_k=VECTOR_TOP_K,
