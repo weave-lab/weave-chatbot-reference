@@ -1,6 +1,5 @@
 __pycache__/
 .DS_Store
-.idea/
 .venv
 *.egg-info
 *.py[oc]
@@ -9,3 +8,9 @@ dist/
 wheels/
 workshop-201/.DS_Store
 workshop-201/teachers_assistant/.venv/
+
+teacher_assistant_*
+
+# IDE files
+.idea/
+.vscode
