@@ -38,6 +38,12 @@ uv --version # test that uv is installed
         - `ollama pull llama3.2:3b`
     - You can check you have the model with `ollama list | grep llama3.2:3b`
     - You will need to have Ollama running to run our agent
+    - If things don't work through the link, you can try installing via brew
+```bash
+brew install ollama
+brew services start ollama
+ollama pull llama3.2:3b
+```
 
 - Visual Studio Code (VSCode) - You can download VSCode from [here](https://code.visualstudio.com/Download)
     - Make sure you have the latest version by clicking on `Code` -> `Check for Updates...` on MacOS or `Help` ->
