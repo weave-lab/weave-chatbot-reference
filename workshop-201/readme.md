@@ -20,7 +20,7 @@ cd weave-chatbot-reference
 ````
 
 - Python
-- [uv](https://docs.astral.sh/uv/getting-started/installation/)
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) - version 0.8.23 or higher should be great!
 
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -33,17 +33,20 @@ uv --version # test that uv is installed
     - You can download Ollama from [here](https://ollama.com/download)
     - Copy Ollama.app to the `Applications` folder on MacOS
     - Double click `Ollama.app` to start the Ollama daemon
-    - Make sure you have the model `llama3.2:3b` downloaded. 3.2 is the version of the model, not the Ollama app itself
+    - Make sure you have the model `llama3.2:3b` downloaded. 3.2 is the version of the model, not the Ollama app itself.
+      Run this from the terminal
         - `ollama pull llama3.2:3b`
     - You can check you have the model with `ollama list | grep llama3.2:3b`
     - You will need to have Ollama running to run our agent
 
 - Visual Studio Code (VSCode) - You can download VSCode from [here](https://code.visualstudio.com/Download)
-    - Update VSCode as needed
-    - Install the Python extension as needed
-    - Install the Jupyter extension as needed
-    - Update plugins as needed
-    - If you do much, probably a good idea to restart VSCode
+    - Make sure you have the latest version by clicking on `Code` -> `Check for Updates...` on MacOS or `Help` ->
+      `Check for Updates...` on Windows
+    - Install the [Python extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python) as needed
+    - Install the [Jupyter extension](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.jupyter) as needed
+    - Update the plugins by clicking on the `Extensions` icon on the left sidebar and then clicking on the
+      `...` icon at the top right of the Extensions panel and then clicking on `Check for Extension Updates`
+    - If you have to update anything, it is probably a good idea to restart VSCode
 
 ## Running the Agent
 
@@ -51,10 +54,14 @@ uv --version # test that uv is installed
 uv run workshop-201/teachers_assistant.py
 ```
 
-You should now be able to ask the teacher questions. Here are some sample prompts. The agent maintains history, so once
-started you can hit `Up` or `Down` to cycle through previous prompts.
+You should now be able to ask the teacher questions. The teacher uses
+the [Strands Agents Framework](#strands-agents-framework). Here are some sample prompts. The agent maintains history, so
+once
+started you can hit `Up` or `Down` to cycle through previous prompts. The teacher agent
 
-If a prompt doesn't actually get run, try hitting `Up` then `Enter`
+If a prompt doesn't actually get run, try hitting `Up` then `Enter`. The agent is a bit verbose, sometimes duplicates
+messages, sometimes apologizes for errors that didn't seem to happen and the formatting is kinda messy, but it is rather
+amazing! Patches welcome :)
 
 ## Sample Prompts
 
@@ -74,8 +81,11 @@ Here are some sample prompts you can use to test the agent:
   workshop-201 folder directly will not work correctly
 - Open the `workshop-201/llm_evals_teachers_assistant.ipynb` file
 - Click `Select Kernel` in the top right of the notebook
-- Click on `weave-chatbot-reference`
-- Click on `Run All` to run all the cells in the notebook
+- Click on `weave-chatbot`. If you don't see `weave-chatbot`, click on `Select Another Kernel...` and then select the
+  `.venv` that
+  corresponds to your directory, likely pointing to `.venv/bin/python` on MacOS or `.venv\Scripts\python.exe` on Windows
+- Click on `Run All` to run all the cells in the notebook. There is a lot going on so it will take a few minutes to run
+  everything!
 
 ## Files
 
