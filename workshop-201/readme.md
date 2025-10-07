@@ -99,4 +99,10 @@ example, which is [here](multi_agent_example.md)
 
 ## Assignment
 
-Add a tool that does something useful or at least does something :) Then evaluate it using the notebook.
+ - Improve any tests as you see fit!
+ - Add a tool that does something useful or at least does something :)
+ - Add evaluations for your new tool using the notebook
+
+## Getting help
+
+Please post to `#mlops` on Slack if you could use some help getting started!
