@@ -15,7 +15,7 @@ For the assignment you will add your own tool and agent to the system and then t
 - Clone this repo
 
 ```bash
-git clone https://github.com/weave-lab/weave-chatbot-reference.git`
+git clone https://github.com/weave-lab/weave-chatbot-reference.git
 cd weave-chatbot-reference
 ````
 
