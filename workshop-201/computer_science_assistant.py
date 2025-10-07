@@ -1,6 +1,5 @@
 from strands import Agent, tool
 from strands_tools import python_repl, shell, file_read, file_write, editor
-import json
 
 COMPUTER_SCIENCE_ASSISTANT_SYSTEM_PROMPT = """
 You are ComputerScienceExpert, a specialized assistant for computer science education and programming. Your capabilities include:
@@ -39,16 +38,16 @@ IMPORTANT: Be direct and confident in your responses. Do not apologize or make e
 def computer_science_assistant(query: str) -> str:
     """
     Process and respond to computer science and programming-related questions using a specialized agent with code execution capabilities.
-    
+
     Args:
         query: The user's computer science or programming question
-        
+
     Returns:
         A detailed response addressing computer science concepts or code execution results
     """
     # Format the query for the computer science agent with clear instructions
     formatted_query = f"Please address this computer science or programming question. When appropriate, provide executable code examples and explain the concepts thoroughly: {query}"
-    
+
     try:
         print("Routed to Computer Science Assistant")
         # Create the computer science agent with relevant tools
@@ -61,7 +60,7 @@ def computer_science_assistant(query: str) -> str:
 
         if len(text_response) > 0:
             return text_response
-        
+
         return "Unable to process your computer science question. Try rephrasing or providing more specific details."
     except Exception as e:
         # Return specific error message for computer science processing

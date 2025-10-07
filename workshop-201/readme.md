@@ -16,19 +16,13 @@ For the assignment you will add your own tool and agent to the system and then t
 
 ```bash
 git clone https://github.com/weave-lab/weave-chatbot-reference.git`
-````
-
-- Checkout this branch
-
-```bash
 cd weave-chatbot-reference
-git checkout ec-teaching-assistant
 ````
 
 - Python
 - [uv](https://docs.astral.sh/uv/getting-started/installation/)
 
-```
+```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 source $HOME/.cargo/env # run this or start a new terminal
 uv --version # test that uv is installed
@@ -53,9 +47,8 @@ uv --version # test that uv is installed
 
 ## Running the Agent
 
-```
-cd ~/go/src/weavelab.xyz/weave-chatbot-reference/workshop-201 # you might need to change the start of this path
-uv run python teachers_assistant.py
+```bash
+uv run workshop-201/teachers_assistant.py
 ```
 
 You should now be able to ask the teacher questions. Here are some sample prompts. The agent maintains history, so once

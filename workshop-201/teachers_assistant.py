@@ -1,10 +1,10 @@
-#!/usr/bin/env python3
 """
 # 📁 Teacher's Assistant Strands Agent
 
 A specialized Strands agent that orchestrates sub-agents to answer user queries.
 This module can be used both as a command-line tool and as a library.
 """
+
 from strands import Agent
 from math_assistant import math_assistant
 from english_assistant import english_assistant
@@ -77,6 +77,7 @@ Additional Instructions:
 When you respond, first state which agent you are using and why, then call the appropriate tool. The tool's response is the final answer - do not repeat or summarize it.
 """
 
+
 class TeacherAssistant:
     """
     A teacher's assistant that routes queries to specialized agents.
@@ -137,7 +138,9 @@ class TeacherAssistant:
             # Check if we got tool call JSON instead of actual execution
             if self._is_tool_call_json(response_str):
                 if attempt < max_retries - 1:
-                    print(f"Tool call not executed, retrying... (attempt {attempt + 1})")
+                    print(
+                        f"Tool call not executed, retrying... (attempt {attempt + 1})"
+                    )
                     continue
                 else:
                     # Final attempt failed, return a helpful message
@@ -155,10 +158,17 @@ class TeacherAssistant:
                             metrics = response.metrics.get_summary()
                         else:
                             # Convert metrics object to dict if possible
-                            metrics = vars(response.metrics) if hasattr(response.metrics, '__dict__') else {}
+                            metrics = (
+                                vars(response.metrics)
+                                if hasattr(response.metrics, "__dict__")
+                                else {}
+                            )
                     except Exception:
                         # If metrics can't be serialized, provide basic info
-                        metrics = {"error": "Metrics not serializable", "type": str(type(response.metrics))}
+                        metrics = {
+                            "error": "Metrics not serializable",
+                            "type": str(type(response.metrics)),
+                        }
 
                 return {"response": response_str, "metrics": metrics}
             return response_str
@@ -243,7 +253,11 @@ def check_ollama_health(host: str = "http://localhost:11434", timeout: int = 5) 
     try:
         response = requests.get(f"{host}/api/tags", timeout=timeout)
         return response.status_code == 200
-    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout, requests.exceptions.RequestException):
+    except (
+        requests.exceptions.ConnectionError,
+        requests.exceptions.Timeout,
+        requests.exceptions.RequestException,
+    ):
         return False
 
 
@@ -257,8 +271,12 @@ def fail_fast_ollama_check(host: str = "http://localhost:11434"):
     print("Checking Ollama connection...")
 
     if not check_ollama_health(host):
-        console.print(f"[red]❌ Error: Ollama is not running or not accessible at {host}[/red]")
-        console.print("\n[yellow]Please ensure Ollama is installed and running:[/yellow]")
+        console.print(
+            f"[red]❌ Error: Ollama is not running or not accessible at {host}[/red]"
+        )
+        console.print(
+            "\n[yellow]Please ensure Ollama is installed and running:[/yellow]"
+        )
         console.print("1. Install Ollama from https://ollama.com/download")
         console.print("2. Start Ollama by running: ollama serve")
         console.print("3. Pull the required model: ollama pull llama3.2:3b")

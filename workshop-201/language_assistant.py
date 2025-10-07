@@ -1,6 +1,5 @@
 from strands import Agent, tool
 from strands_tools import http_request
-import json
 
 LANGUAGE_ASSISTANT_SYSTEM_PROMPT = """
 You are LanguageAssistant, a specialized language translation and learning assistant. Your role encompasses:
@@ -33,16 +32,16 @@ IMPORTANT: Be direct and confident in your responses. Do not apologize or make e
 def language_assistant(query: str) -> str:
     """
     Process and respond to language translation and foreign language learning queries.
-    
+
     Args:
         query: A request for translation or language learning assistance
-        
+
     Returns:
         A translated text or language learning guidance with explanations
     """
     # Format the query with specific guidance for the language assistant
     formatted_query = f"Please address this translation or language learning request, providing cultural context and explanations where helpful: {query}"
-    
+
     try:
         print("\nRouted to Language Assistant\n")
         language_agent = Agent(
