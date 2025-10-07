@@ -1,6 +1,5 @@
 from strands import Agent, tool
 from strands_tools import file_read, file_write, editor
-import json
 
 ENGLISH_ASSISTANT_SYSTEM_PROMPT = """
 You are English master, an advanced English education assistant. Your capabilities include:
@@ -33,16 +32,16 @@ IMPORTANT: Be direct and confident in your responses. Do not apologize or make e
 def english_assistant(query: str) -> str:
     """
     Process and respond to English language, literature, and writing-related queries.
-    
+
     Args:
         query: The user's English language or literature question
-        
+
     Returns:
         A helpful response addressing English language or literature concepts
     """
     # Format the query with specific guidance for the English assistant
     formatted_query = f"Analyze and respond to this English language or literature question, providing clear explanations with examples where appropriate: {query}"
-    
+
     try:
         print("Routed to English Assistant")
 
@@ -55,7 +54,7 @@ def english_assistant(query: str) -> str:
 
         if len(text_response) > 0:
             return text_response
-        
+
         return "Unable to analyze the English language question. Please rephrase or provide more context."
     except Exception as e:
         # Return specific error message for English queries

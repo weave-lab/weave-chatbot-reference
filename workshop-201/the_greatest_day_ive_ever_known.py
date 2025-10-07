@@ -1,6 +1,7 @@
 from strands import tool
 from datetime import datetime
 
+
 @tool
 def today() -> str:
     """
