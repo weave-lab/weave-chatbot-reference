@@ -9,6 +9,7 @@ from strands import Agent
 from math_assistant import math_assistant
 from english_assistant import english_assistant
 from language_assistant import language_assistant
+from empathy_assistant import empathy_assistant
 from computer_science_assistant import computer_science_assistant
 from no_expertise import general_assistant
 from strands.models.ollama import OllamaModel
@@ -39,6 +40,7 @@ Each specialized agent only performs its specific function:
 - Math Agent: Only computes and returns mathematical results.
 - English Agent: Only explains or summarizes results in plain English.
 - Language Agent: Only translates text between languages.
+- Empathy Agent: Only provides emotional support and encouragement.
 - Computer Science Agent: Only answers programming and computer science questions.
 - General Assistant: Only handles general knowledge queries (NOT date queries).
 - Today Tool: ALWAYS use for ANY date-related questions including "What is the date today?", "What date is it?", "Today's date", etc.
@@ -55,6 +57,7 @@ Additional Instructions:
    - Math Agent: For mathematical calculations, problems, and concepts
    - English Agent: For writing, grammar, literature, and composition
    - Language Agent: For translation and language-related queries
+   _ Empathy Agent: For emotional support and encouragement
    - Computer Science Agent: For programming, algorithms, data structures, and code execution
    - Today Tool: For ANY date queries like "What is the date today?", "What date is it?", "Today's date" - NEVER use general_assistant for dates
    - General Assistant: For all other topics outside these specialized domains (excluding date queries)
@@ -69,6 +72,7 @@ Additional Instructions:
    - If query involves calculations/numbers → Math Agent
    - If query involves writing/literature/grammar → English Agent
    - If query involves translation → Language Agent
+   - If query involves emotional support/encouragement → Empathy Agent
    - If query involves programming/coding/algorithms/computer science → Computer Science Agent
    - If query asks about today's date, current date, or "what date is it" → Today Tool (MANDATORY)
    - If query is outside these specialized areas → General Assistant
@@ -126,6 +130,7 @@ class TeacherAssistant:
                     math_assistant,
                     english_assistant,
                     language_assistant,
+                    empathy_assistant,
                     computer_science_assistant,
                     general_assistant,
                     today,
@@ -192,6 +197,7 @@ class TeacherAssistant:
             '{"name":"computer_science_assistant"',
             '{"name":"english_assistant"',
             '{"name":"language_assistant"',
+            '{"name":"empathy_assistant"',
             '{"name":"general_assistant"',
             '{"name":"today"',
             '"parameters":',
