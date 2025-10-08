@@ -39,6 +39,7 @@ uv --version # test that uv is installed
     - You can check you have the model with `ollama list | grep llama3.2:3b`
     - You will need to have Ollama running to run our agent
     - If things don't work through the link, you can try installing via brew
+
 ```bash
 brew install ollama
 brew services start ollama
@@ -92,6 +93,8 @@ Here are some sample prompts you can use to test the agent:
   corresponds to your directory, likely pointing to `.venv/bin/python` on MacOS or `.venv\Scripts\python.exe` on Windows
 - Click on `Run All` to run all the cells in the notebook. There is a lot going on so it will take a few minutes to run
   everything!
+- The `MAX_TOTAL_TESTS` variable on the first line the notebook controls how many tests are run. We're defaulting to 3,
+  but you can increase it or set it to None to run all the tests. Running all the tests will take a while!
 
 ## Files
 
