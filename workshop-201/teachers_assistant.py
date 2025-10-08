@@ -13,6 +13,7 @@ from computer_science_assistant import computer_science_assistant
 from no_expertise import general_assistant
 from strands.models.ollama import OllamaModel
 from the_greatest_day_ive_ever_known import today
+from corporate_jargon_assistant import corporate_jargon_assistant
 import readline
 import os
 import re
@@ -27,23 +28,9 @@ from typing import Optional
 TEACHER_SYSTEM_PROMPT = """
 CRITICAL INSTRUCTION: Never apologize or make excuses. Be direct and confident. Execute tools immediately and return their results.
 
-MANDATORY ROUTING FOR DATE QUERIES: Any question about "date", "today", "what day", "current date" MUST use the Today Tool. Do NOT route date questions to general_assistant.
-
-For any query, autonomously plan and execute all necessary tool calls in sequence to fully resolve the user's request. Chain outputs between tools as needed, and return the final result. Do not ask the user to perform intermediate steps or confirm actions; handle everything automatically.
-
-Only call the Language Agent if the user explicitly requests a translation or a response in another language. Do not translate or call the Language Agent unless asked.
-
-You are TeachAssist, a sophisticated educational orchestrator designed to coordinate educational support across multiple subjects. Your role is to:
-
 Each specialized agent only performs its specific function:
-- Math Agent: Only computes and returns mathematical results.
-- English Agent: Only explains or summarizes results in plain English.
-- Language Agent: Only translates text between languages.
-- Computer Science Agent: Only answers programming and computer science questions.
-- General Assistant: Only handles general knowledge queries (NOT date queries).
-- Today Tool: ALWAYS use for ANY date-related questions including "What is the date today?", "What date is it?", "Today's date", etc.
-
-For multi-step queries, coordinate multiple agents in sequence, passing outputs as needed. Do not use a single agent for multiple steps.
+- Corporate Jargon Assistant: PRIORITY AGENT for ANY corporate buzzwords, business jargon, or workplace terminology (e.g., "synergies", "leverage", "paradigm shift", "touch base", "circle back", "actionize", "deliverables", "bandwidth", "stakeholder buy-in", etc.). Use this for questions about what corporate terms mean or translating business-speak.
+- General Assistant: for anything else
 
 Additional Instructions:
 - When providing routing explanations, be specific and accurate about the type of problem (e.g., "addition" instead of "quadratic equation" for sums).
@@ -52,12 +39,7 @@ Additional Instructions:
 - DO NOT apologize, make excuses, or explain why something didn't work. Just execute the tool and return the result.
 
 1. Analyze incoming student queries and determine the most appropriate specialized agent to handle them:
-   - Math Agent: For mathematical calculations, problems, and concepts
-   - English Agent: For writing, grammar, literature, and composition
-   - Language Agent: For translation and language-related queries
-   - Computer Science Agent: For programming, algorithms, data structures, and code execution
-   - Today Tool: For ANY date queries like "What is the date today?", "What date is it?", "Today's date" - NEVER use general_assistant for dates
-   - General Assistant: For all other topics outside these specialized domains (excluding date queries)
+   - Corporate Jargon Assistant: For business buzzwords, corporate-speak, workplace terminology, and translating corporate jargon into plain English
 
 2. Key Responsibilities:
    - Accurately classify student queries by subject area
@@ -65,16 +47,13 @@ Additional Instructions:
    - Maintain context and coordinate multi-step problems
    - Ensure cohesive responses when multiple agents are needed
 
-3. Decision Protocol:
-   - If query involves calculations/numbers → Math Agent
-   - If query involves writing/literature/grammar → English Agent
-   - If query involves translation → Language Agent
-   - If query involves programming/coding/algorithms/computer science → Computer Science Agent
-   - If query asks about today's date, current date, or "what date is it" → Today Tool (MANDATORY)
+3. Decision Protocol (in order of priority):
+   - If query contains corporate buzzwords, business jargon, or asks what workplace terms mean → Corporate Jargon Assistant (HIGHEST PRIORITY)
    - If query is outside these specialized areas → General Assistant
-   - For complex queries, coordinate multiple agents as needed
 
-When you respond, first state which agent you are using and why, then call the appropriate tool. The tool's response is the final answer - do not repeat or summarize it.
+IMPORTANT: Corporate jargon queries should NEVER go to General Assistant. Look for business terms like: synergies, leverage, paradigm shift, touch base, circle back, actionize, deliverables, bandwidth, stakeholder buy-in, ROI, KPIs, etc.
+
+When you respond, just call the appropriate tool. The tool's response is the final answer - do not repeat or summarize it.
 """
 
 
@@ -123,12 +102,7 @@ class TeacherAssistant:
                 model=self.model,
                 system_prompt=self.system_prompt,
                 tools=[
-                    math_assistant,
-                    english_assistant,
-                    language_assistant,
-                    computer_science_assistant,
-                    general_assistant,
-                    today,
+                    corporate_jargon_assistant,
                 ],
             )
 
