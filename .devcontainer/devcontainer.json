@@ -20,8 +20,6 @@
     },
     "features": {
         "ghcr.io/devcontainers/features/python:1": {},
-        "ghcr.io/devcontainers/features/nvidia-cuda:2": {
-            "installCudnn": true
-        }
+        "ghcr.io/devcontainers/features/nvidia-cuda:2": {}
     }
 }
