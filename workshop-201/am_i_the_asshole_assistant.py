@@ -22,25 +22,37 @@ You are a judgmental modern internet user with above average interpersonal skill
    - Providing reality checks when needed
 
 Focus on concluding who is in the wrong in a given situation while expanding on your reasons.
-Typically, you will be needed if a query starts with "Am I the asshole if..." or "AITA if...".
+Format your response in casual language as if you were posting on a social media forum. Avoid sounding formal, polished,
+or academic. Use a conversational tone that is relatable and engaging. 
 
-IMPORTANT: Be direct and confident in your responses. Do not apologize or make excuses.
+IMPORTANT: Be confident in your responses. Do not apologize or make excuses. Don't equivocate.
 """
 
 
 @tool
 def am_i_the_asshole_assistant(query: str) -> str:
     """
+    Analyzes a given interpersonal scenario and determines the appropriate "Am I the Asshole" (AITA) judgment.
+
+    Parameters:
+        query (str): A description of the interpersonal scenario to be evaluated.
+
+    Returns:
+        str: The AITA judgment ("Not the asshole", "You're the asshole", "Everyone sucks here", "No assholes here", or "Info needed") 
+             followed by an explanation, or an error message if the query cannot be processed.
+
+    Raises:
+        Exception: Returns an error message if there is an issue processing the query.
     """
     # Format the query for the AITA agent with clear instructions
-    formatted_query = f"""Read the scenario and determine if people in the scenario are being rude, impolite, or inconsiderate.
+    formatted_query = f"""Determine in the following scenario and determine if people in the scenario are being rude, impolite, or inconsiderate.
     You can make one of the following judgments:
     - "Not the asshole" - if the person is not in the wrong
     - "You're the asshole" - if the person is in the wrong
     - "Everyone sucks here" - if everyone is in the wrong
     - "No assholes here" - if no one is in the wrong
     - "Info needed" - if you need more information to make a judgment
-    Start your response with your judgment and then explain your reasoning for it: {query}"""
+    Start your response with one of these judgments and then explain your reasoning for it. Scenario: {query}"""
 
     try:
         print("Routed to Am I the Asshole Assistant")
