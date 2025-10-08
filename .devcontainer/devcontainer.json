@@ -1,7 +1,8 @@
 {
-    "image": "mcr.microsoft.com/devcontainers/universal:2",
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu", // Any generic, debian-based image.
     "hostRequirements": {
-        "cpus": 4
+        "cpus": 4,
+        "gpu": "optional"
     },
     "waitFor": "onCreateCommand",
     //"updateContentCommand": "python3 -m pip install -r requirements.txt",
@@ -18,7 +19,8 @@
         }
     },
     "features": {
-        "ghcr.io/devcontainers/features/nvidia-cuda:1": {
+        "ghcr.io/devcontainers/features/python:1": {},
+        "ghcr.io/devcontainers/features/nvidia-cuda:2": {
             "installCudnn": true
         }
     }
