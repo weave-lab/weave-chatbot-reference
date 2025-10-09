@@ -7,6 +7,7 @@ This module can be used both as a command-line tool and as a library.
 
 from strands import Agent
 from math_assistant import math_assistant
+from dream_interpreter import dream_interpreter
 from english_assistant import english_assistant
 from language_assistant import language_assistant
 from computer_science_assistant import computer_science_assistant
@@ -123,6 +124,7 @@ class TeacherAssistant:
                 model=self.model,
                 system_prompt=self.system_prompt,
                 tools=[
+                    dream_interpreter,
                     math_assistant,
                     english_assistant,
                     language_assistant,
