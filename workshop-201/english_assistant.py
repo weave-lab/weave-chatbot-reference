@@ -1,5 +1,6 @@
 from strands import Agent, tool
 from strands_tools import file_read, file_write, editor
+from strands.models.gemini import GeminiModel
 
 ENGLISH_ASSISTANT_SYSTEM_PROMPT = """
 You are English master, an advanced English education assistant. Your capabilities include:
@@ -45,7 +46,17 @@ def english_assistant(query: str) -> str:
     try:
         print("Routed to English Assistant")
 
+        model = GeminiModel(
+            client_args={
+                "project": "weave-ai-sandbox",
+                "location": "us-central1",
+                "vertexai": True,
+            },
+            model_id="gemini-2.5-flash",
+        )
+
         english_agent = Agent(
+            model=model,
             system_prompt=ENGLISH_ASSISTANT_SYSTEM_PROMPT,
             tools=[editor, file_read, file_write],
         )

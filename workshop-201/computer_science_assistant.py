@@ -1,5 +1,6 @@
 from strands import Agent, tool
 from strands_tools import python_repl, shell, file_read, file_write, editor
+from strands.models.gemini import GeminiModel
 
 COMPUTER_SCIENCE_ASSISTANT_SYSTEM_PROMPT = """
 You are ComputerScienceExpert, a specialized assistant for computer science education and programming. Your capabilities include:
@@ -50,8 +51,19 @@ def computer_science_assistant(query: str) -> str:
 
     try:
         print("Routed to Computer Science Assistant")
+
+        model = GeminiModel(
+            client_args={
+                "project": "weave-ai-sandbox",
+                "location": "us-central1",
+                "vertexai": True,
+            },
+            model_id="gemini-2.5-flash",
+        )
+
         # Create the computer science agent with relevant tools
         cs_agent = Agent(
+            model=model,
             system_prompt=COMPUTER_SCIENCE_ASSISTANT_SYSTEM_PROMPT,
             tools=[python_repl, shell, file_read, file_write, editor],
         )

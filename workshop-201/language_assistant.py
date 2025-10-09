@@ -1,5 +1,6 @@
 from strands import Agent, tool
 from strands_tools import http_request
+from strands.models.gemini import GeminiModel
 
 LANGUAGE_ASSISTANT_SYSTEM_PROMPT = """
 You are LanguageAssistant, a specialized language translation and learning assistant. Your role encompasses:
@@ -44,7 +45,18 @@ def language_assistant(query: str) -> str:
 
     try:
         print("\nRouted to Language Assistant\n")
+
+        model = GeminiModel(
+            client_args={
+                "project": "weave-ai-sandbox",
+                "location": "us-central1",
+                "vertexai": True,
+            },
+            model_id="gemini-2.5-flash",
+        )
+
         language_agent = Agent(
+            model=model,
             system_prompt=LANGUAGE_ASSISTANT_SYSTEM_PROMPT,
             tools=[http_request],
         )

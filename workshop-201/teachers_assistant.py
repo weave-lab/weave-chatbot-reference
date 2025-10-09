@@ -11,14 +11,12 @@ from english_assistant import english_assistant
 from language_assistant import language_assistant
 from computer_science_assistant import computer_science_assistant
 from no_expertise import general_assistant
-from strands.models.ollama import OllamaModel
+from strands.models.gemini import GeminiModel
 from the_greatest_day_ive_ever_known import today
 import readline
 import os
 import re
 import argparse
-import requests
-import sys
 from rich.console import Console
 from rich.markdown import Markdown
 import json
@@ -88,19 +86,24 @@ class TeacherAssistant:
 
     def __init__(
         self,
-        host: str = "http://localhost:11434",
-        model_id: str = "llama3.2:3b",
+        model_id: str = "gemini-2.5-flash",
         system_prompt: Optional[str] = None,
     ):
         """
         Initialize the TeacherAssistant.
 
         Args:
-            host: Ollama server address
             model_id: Model to use for the main orchestrating agent
             system_prompt: Custom system prompt (uses default if None)
         """
-        self.model = OllamaModel(host=host, model_id=model_id)
+        self.model = GeminiModel(
+            client_args={
+                "project": "weave-ai-sandbox",
+                "location": "us-central1",
+                "vertexai": True,
+            },
+            model_id=model_id,
+        )
         self.system_prompt = system_prompt or TEACHER_SYSTEM_PROMPT
         self.console = Console()
 
@@ -239,53 +242,6 @@ console = Console()
 HISTORY_FILE = os.path.expanduser("~/.teachassist_history")
 
 
-def check_ollama_health(host: str = "http://localhost:11434", timeout: int = 5) -> bool:
-    """
-    Check if Ollama is running and accessible.
-
-    Args:
-        host: Ollama server address
-        timeout: Request timeout in seconds
-
-    Returns:
-        True if Ollama is accessible, False otherwise
-    """
-    try:
-        response = requests.get(f"{host}/api/tags", timeout=timeout)
-        return response.status_code == 200
-    except (
-        requests.exceptions.ConnectionError,
-        requests.exceptions.Timeout,
-        requests.exceptions.RequestException,
-    ):
-        return False
-
-
-def fail_fast_ollama_check(host: str = "http://localhost:11434"):
-    """
-    Check if Ollama is running and exit immediately if not.
-
-    Args:
-        host: Ollama server address
-    """
-    print("Checking Ollama connection...")
-
-    if not check_ollama_health(host):
-        console.print(
-            f"[red]❌ Error: Ollama is not running or not accessible at {host}[/red]"
-        )
-        console.print(
-            "\n[yellow]Please ensure Ollama is installed and running:[/yellow]"
-        )
-        console.print("1. Install Ollama from https://ollama.com/download")
-        console.print("2. Start Ollama by running: ollama serve")
-        console.print("3. Pull the required model: ollama pull llama3.2:3b")
-        console.print("\nThen try running the teacher assistant again.")
-        sys.exit(1)
-
-    print("✅ Ollama connection successful")
-
-
 def run_cli():
     """Run the command-line interface for the teacher assistant."""
     # Parse command line arguments
@@ -313,9 +269,6 @@ Examples:
 
     args = parser.parse_args()
     show_metrics = args.metrics
-
-    # Fail fast if Ollama is not running
-    fail_fast_ollama_check()
 
     # Handle single query mode
     if args.query:

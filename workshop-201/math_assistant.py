@@ -1,5 +1,6 @@
 from strands import Agent, tool
 from strands_tools import calculator
+from strands.models.gemini import GeminiModel
 
 MATH_ASSISTANT_SYSTEM_PROMPT = """
 You are math wizard, a specialized mathematics education assistant. Your capabilities include:
@@ -35,6 +36,7 @@ def math_assistant(query: str) -> str:
 
     Args:
         query: A mathematical question or problem from the user
+        model: An optional language model instance to use for the agent
 
     Returns:
         A detailed mathematical answer with explanations and steps
@@ -44,8 +46,17 @@ def math_assistant(query: str) -> str:
 
     try:
         print("Routed to Math Assistant")
+        model = GeminiModel(
+            client_args={
+                "project": "weave-ai-sandbox",
+                "location": "us-central1",
+                "vertexai": True,
+            },
+            model_id="gemini-2.5-flash",
+        )
         # Create the math agent with calculator capability
         math_agent = Agent(
+            model=model,
             system_prompt=MATH_ASSISTANT_SYSTEM_PROMPT,
             tools=[calculator],
         )

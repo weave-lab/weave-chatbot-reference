@@ -1,4 +1,5 @@
 from strands import Agent, tool
+from strands.models.gemini import GeminiModel
 
 GENERAL_ASSISTANT_SYSTEM_PROMPT = """
 You are GeneralAssist, a concise general knowledge assistant for topics outside specialized domains. Your key characteristics are:
@@ -47,7 +48,18 @@ def general_assistant(query: str) -> str:
 
     try:
         print("Routed to General Assistant")
+
+        model = GeminiModel(
+            client_args={
+                "project": "weave-ai-sandbox",
+                "location": "us-central1",
+                "vertexai": True,
+            },
+            model_id="gemini-2.5-flash",
+        )
+
         general_agent = Agent(
+            model=model,
             system_prompt=GENERAL_ASSISTANT_SYSTEM_PROMPT,
             tools=[],  # No specialized tools needed for general knowledge
         )
