@@ -1,4 +1,5 @@
 from strands import Agent, tool
+from strands.models.ollama import OllamaModel
 import json
 
 GENERAL_ASSISTANT_SYSTEM_PROMPT = """
@@ -48,7 +49,15 @@ def general_assistant(query: str) -> str:
     
     try:
         print("Routed to General Assistant")
+        
+        # Use Ollama model to avoid AWS credentials requirement
+        ollama_model = OllamaModel(
+            host="http://ollama-ollama-service:11434",
+            model_id="gpt-oss:20b"
+        )
+        
         general_agent = Agent(
+            model=ollama_model,
             system_prompt=GENERAL_ASSISTANT_SYSTEM_PROMPT,
             tools=[],  # No specialized tools needed for general knowledge
         )

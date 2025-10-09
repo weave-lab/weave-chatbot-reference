@@ -10,6 +10,7 @@ from math_assistant import math_assistant
 from english_assistant import english_assistant
 from language_assistant import language_assistant
 from computer_science_assistant import computer_science_assistant
+from postgres_assistant import postgres_assistant
 from no_expertise import general_assistant
 from strands.models.ollama import OllamaModel
 from the_greatest_day_ive_ever_known import today
@@ -19,6 +20,7 @@ import re
 import argparse
 import requests
 import sys
+import logging
 from rich.console import Console
 from rich.markdown import Markdown
 import json
@@ -40,6 +42,7 @@ Each specialized agent only performs its specific function:
 - English Agent: Only explains or summarizes results in plain English.
 - Language Agent: Only translates text between languages.
 - Computer Science Agent: Only answers programming and computer science questions.
+- PostgreSQL Assistant: Only handles database queries, performance analysis, schema inspection, and PostgreSQL-related questions.
 - General Assistant: Only handles general knowledge queries (NOT date queries).
 - Today Tool: ALWAYS use for ANY date-related questions including "What is the date today?", "What date is it?", "Today's date", etc.
 
@@ -70,6 +73,7 @@ Additional Instructions:
    - If query involves writing/literature/grammar → English Agent
    - If query involves translation → Language Agent
    - If query involves programming/coding/algorithms/computer science → Computer Science Agent
+   - If query involves database/PostgreSQL/SQL/performance/schema/tables/queries → PostgreSQL Assistant
    - If query asks about today's date, current date, or "what date is it" → Today Tool (MANDATORY)
    - If query is outside these specialized areas → General Assistant
    - For complex queries, coordinate multiple agents as needed
@@ -87,8 +91,8 @@ class TeacherAssistant:
 
     def __init__(
         self,
-        host: str = "http://localhost:11434",
-        model_id: str = "llama3.2:3b",
+        host: str = "http://ollama-ollama-service:11434",
+        model_id: str = "gpt-oss:20b",
         system_prompt: Optional[str] = None,
     ):
         """
@@ -102,6 +106,9 @@ class TeacherAssistant:
         self.model = OllamaModel(host=host, model_id=model_id)
         self.system_prompt = system_prompt or TEACHER_SYSTEM_PROMPT
         self.console = Console()
+        self.logger = logging.getLogger(__name__)
+        
+        self.logger.debug(f"Initialized TeacherAssistant with host: {host}, model: {model_id}")
 
     def ask(self, query: str, return_metrics: bool = False) -> str:
         """
@@ -114,9 +121,12 @@ class TeacherAssistant:
         Returns:
             String response from the agent, or dict with response and metrics
         """
+        self.logger.debug(f"Processing query: {query[:100]}..." if len(query) > 100 else f"Processing query: {query}")
         max_retries = 3
 
         for attempt in range(max_retries):
+            self.logger.debug(f"Attempt {attempt + 1}/{max_retries}")
+            
             # Create a fresh agent for each query to clear context
             agent = Agent(
                 model=self.model,
@@ -126,25 +136,31 @@ class TeacherAssistant:
                     english_assistant,
                     language_assistant,
                     computer_science_assistant,
+                    postgres_assistant,
                     general_assistant,
                     today,
                 ],
             )
+            self.logger.debug("Created fresh agent with tools")
 
             response = agent(query)
             response_str = str(response)
+            self.logger.debug(f"Got response of length: {len(response_str)}")
 
             # Check if we got tool call JSON instead of actual execution
             if self._is_tool_call_json(response_str):
+                self.logger.debug("Detected tool call JSON instead of execution result")
                 if attempt < max_retries - 1:
-                    print(f"Tool call not executed, retrying... (attempt {attempt + 1})")
+                    self.logger.warning(f"Tool call not executed, retrying... (attempt {attempt + 1})")
                     continue
                 else:
                     # Final attempt failed, return a helpful message
+                    self.logger.error("All retry attempts failed, unable to execute tool")
                     return "I'm having trouble executing the appropriate tool. Please try rephrasing your question or try again."
 
             # Post-process output to ensure newlines before routing explanations
             response_str = re.sub(r"([^\n])(?=Routing to )", r"\1\n", response_str)
+            self.logger.debug("Post-processed response for formatting")
 
             if return_metrics:
                 metrics = {}
@@ -156,14 +172,20 @@ class TeacherAssistant:
                         else:
                             # Convert metrics object to dict if possible
                             metrics = vars(response.metrics) if hasattr(response.metrics, '__dict__') else {}
-                    except Exception:
+                        self.logger.debug(f"Extracted metrics: {len(metrics)} fields")
+                    except Exception as e:
                         # If metrics can't be serialized, provide basic info
                         metrics = {"error": "Metrics not serializable", "type": str(type(response.metrics))}
+                        self.logger.debug(f"Metrics extraction failed: {e}")
 
+                self.logger.debug("Returning response with metrics")
                 return {"response": response_str, "metrics": metrics}
+            
+            self.logger.debug("Returning response")
             return response_str
 
         # This shouldn't be reached, but just in case
+        self.logger.error("Exhausted all retry attempts without success")
         return "Unable to process your request after multiple attempts."
 
     def _is_tool_call_json(self, response: str) -> bool:
@@ -182,6 +204,7 @@ class TeacherAssistant:
             '{"name":"computer_science_assistant"',
             '{"name":"english_assistant"',
             '{"name":"language_assistant"',
+            '{"name":"postgres_assistant"',
             '{"name":"general_assistant"',
             '{"name":"today"',
             '"parameters":',
@@ -229,7 +252,7 @@ console = Console()
 HISTORY_FILE = os.path.expanduser("~/.teachassist_history")
 
 
-def check_ollama_health(host: str = "http://localhost:11434", timeout: int = 5) -> bool:
+def check_ollama_health(host: str = "http://ollama-ollama-service:11434", timeout: int = 5) -> bool:
     """
     Check if Ollama is running and accessible.
 
@@ -247,7 +270,7 @@ def check_ollama_health(host: str = "http://localhost:11434", timeout: int = 5) 
         return False
 
 
-def fail_fast_ollama_check(host: str = "http://localhost:11434"):
+def fail_fast_ollama_check(host: str = "http://ollama-ollama-service:11434"):
     """
     Check if Ollama is running and exit immediately if not.
 
@@ -278,7 +301,9 @@ def run_cli():
 Examples:
   python teachers_assistant.py                    # Run without metrics output (default)
   python teachers_assistant.py --metrics         # Run with metrics output
+  python teachers_assistant.py --debug           # Run with debug logging enabled
   python teachers_assistant.py -q "What is 2+2?" # Ask single question and exit
+  python teachers_assistant.py --debug --metrics -q "Calculate 5+5" # Debug with metrics for single query
         """,
     )
     parser.add_argument(
@@ -292,9 +317,42 @@ Examples:
         type=str,
         help="Ask a single question and exit (non-interactive mode)",
     )
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Enable debug logging output",
+    )
 
     args = parser.parse_args()
     show_metrics = args.metrics
+    
+    # Configure logging based on debug flag
+    if args.debug:
+        logging.basicConfig(
+            level=logging.DEBUG,
+            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            handlers=[
+                logging.StreamHandler(sys.stdout)
+            ]
+        )
+        print("🐛 Debug logging enabled")
+    else:
+        # Set to WARNING level by default to suppress INFO and DEBUG messages
+        logging.basicConfig(level=logging.WARNING)
+        
+        # Silence noisy third-party loggers specifically
+        noisy_loggers = [
+            'httpcore',
+            'httpx', 
+            'urllib3',
+            'asyncio',
+            'strands',
+            'markdown_it',
+            'requests'
+        ]
+        
+        for logger_name in noisy_loggers:
+            logging.getLogger(logger_name).setLevel(logging.WARNING)
 
     # Fail fast if Ollama is not running
     fail_fast_ollama_check()
